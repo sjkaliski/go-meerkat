@@ -101,6 +101,26 @@ func (c *Client) GetAllBroadcasts() ([]*Broadcast, error) {
 	return resBody.Result, nil
 }
 
+// GetBroadcast gets a summary of a broadcast.
+func (c *Client) GetBroadcast(id string) (*Broadcast, error) {
+	url := strings.Replace(c.routes[routeStreamSummaryTemplate], "{broadcastId}", id, -1)
+	res, err := c.get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var resBody struct {
+		Result *Broadcast
+	}
+	decoder := json.NewDecoder(res.Body)
+	err = decoder.Decode(&resBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return resBody.Result, nil
+}
+
 // GetBroadcastActivities gets a broadcast and it's associated activities.
 func (c *Client) GetBroadcastActivities(id string) (*Broadcast, error) {
 	url := strings.Replace(c.routes[routeBroadcastActivities], "{broadcastId}", id, -1)
@@ -171,6 +191,26 @@ func (c *Client) GetBroadcastLikes(id string) ([]*Activity, error) {
 
 	var resBody struct {
 		Result []*Activity
+	}
+	decoder := json.NewDecoder(res.Body)
+	err = decoder.Decode(&resBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return resBody.Result, nil
+}
+
+// GetScheduledBroadcasts gets upcoming broadcasts.
+func (c *Client) GetScheduledBroadcasts() ([]*Broadcast, error) {
+	url := c.routes[routeScheduledStreams]
+	res, err := c.get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var resBody struct {
+		Result []*Broadcast
 	}
 	decoder := json.NewDecoder(res.Body)
 	err = decoder.Decode(&resBody)
